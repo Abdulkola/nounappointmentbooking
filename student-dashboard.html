@@ -180,6 +180,15 @@ Profile
 <script>
 	(async function () {
 		try {
+			// First, check client-side sessionStorage (works without backend)
+			var localUser = sessionStorage.getItem('loggedInUser');
+			if (localUser) {
+				var el = document.getElementById('welcomeUser');
+				if (el) el.textContent = 'Welcome, ' + localUser;
+				return;
+			}
+
+			// Fallback: attempt server-side session check
 			var r = await fetch('/api/me', { credentials: 'include' });
 			if (!r.ok) {
 				window.location.href = 'login.html';
