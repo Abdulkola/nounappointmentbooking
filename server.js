@@ -28,10 +28,17 @@ app.use(session({
   }
 }));
 
-// In-memory user store (for demo). Passwords should be stored hashed in a real DB.
-const users = [
-  { username: 'admin', passwordHash: bcrypt.hashSync('admin123', 10) }
-];
+// Load users from users.json if present, otherwise fall back to a default in-memory user.
+const fs = require('fs');
+let users = [];
+try {
+  const data = fs.readFileSync(path.join(__dirname, 'users.json'), 'utf8');
+  users = JSON.parse(data);
+  console.log('[users] loaded from users.json', users.map(u => u.username));
+} catch (e) {
+  console.log('[users] users.json not found or invalid, using default in-memory user');
+  users = [ { username: 'admin', passwordHash: bcrypt.hashSync('admin123', 10) } ];
+}
 
 function authRequired(req, res, next) {
   if (req.session && req.session.user) return next();
