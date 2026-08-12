@@ -1,0 +1,165 @@
+/* ==========================================
+   NOUN Appointment Booking System
+   Main Stylesheet
+========================================== */
+
+/* Reset */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* Body */
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f4f7f9;
+    color:#333;
+}
+
+/* ==========================
+   Navigation
+========================== */
+
+.navbar{
+    background:#006633;
+}
+
+.navbar-brand{
+    font-weight:bold;
+    font-size:22px;
+    color:#fff !important;
+}
+
+.nav-link{
+    color:#fff !important;
+    margin-left:15px;
+    font-weight:500;
+}
+
+.nav-link:hover{
+    color:#ffc107 !important;
+}
+
+/* ==========================
+   Hero Section
+========================== */
+
+.hero{
+    background:linear-gradient(rgba(0,102,51,.75),rgba(0,102,51,.75)),
+    url("../images/hero-bg.jpg");
+    background-size:cover;
+    background-position:center;
+    color:white;
+    text-align:center;
+    padding:120px 20px;
+}
+
+.hero h1{
+    font-size:48px;
+    font-weight:bold;
+}
+
+.hero h3{
+    margin-top:15px;
+    font-size:28px;
+}
+
+.hero p{
+    margin-top:20px;
+    font-size:18px;
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.hero .btn{
+    margin:10px;
+    padding:12px 30px;
+    border-radius:30px;
+    font-weight:bold;
+}
+
+/* ==========================
+   Cards
+========================== */
+
+.card{
+    margin-top:20px;
+    border:none;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card-body{
+    padding:30px;
+}
+
+.card h3{
+    font-size:45px;
+}
+
+/* ==========================
+   About Section
+========================== */
+
+.about{
+    padding:60px 20px;
+}
+
+.about h2{
+    color:#006633;
+    margin-bottom:20px;
+}
+
+.about p{
+    max-width:800px;
+    margin:auto;
+    font-size:17px;
+    line-height:1.8;
+}
+
+/* ==========================
+   Footer
+========================== */
+
+footer{
+    background:#006633;
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    margin-top:60px;
+}
+
+/* ==========================
+   Responsive Design
+========================== */
+
+@media(max-width:768px){
+
+.hero{
+    padding:80px 20px;
+}
+
+.hero h1{
+    font-size:32px;
+}
+
+.hero h3{
+    font-size:22px;
+}
+
+.hero p{
+    font-size:16px;
+}
+
+.navbar-brand{
+    font-size:18px;
+}
+
+}
