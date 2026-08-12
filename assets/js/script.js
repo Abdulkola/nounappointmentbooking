@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				var res = await fetch('/api/login', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
 					body: JSON.stringify({ username: username, password: password })
 				});
 
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			e.preventDefault();
 			console.log('logout clicked');
 			try {
-				await fetch('/api/logout', { method: 'POST' });
+				await fetch('/api/logout', { method: 'POST', credentials: 'include' });
 			} catch (e) {}
 			window.location.href = '/index.html';
 		});

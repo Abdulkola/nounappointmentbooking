@@ -180,7 +180,7 @@ Profile
 <script>
 	(async function () {
 		try {
-			var r = await fetch('/api/me');
+			var r = await fetch('/api/me', { credentials: 'include' });
 			if (!r.ok) {
 				window.location.href = 'login.html';
 				return;

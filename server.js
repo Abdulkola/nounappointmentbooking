@@ -2,16 +2,30 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// Enable CORS with credentials so browser can send/receive cookies
+app.use(cors({ origin: true, credentials: true }));
+
+// If deployed behind a proxy (Heroku, Vercel, etc.) trust the first proxy
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(session({
-  secret: 'replace_this_with_a_strong_secret',
+  secret: process.env.SESSION_SECRET || 'replace_this_with_a_strong_secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 }
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
 }));
 
 // In-memory user store (for demo). Passwords should be stored hashed in a real DB.
@@ -41,12 +55,19 @@ app.get('/profile.html', authRequired, (req, res) => {
 // API: login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body || {};
+  console.log('[login] attempt for username:', username);
   const user = users.find(u => u.username === username);
-  if (!user) return res.status(401).json({ error: 'Invalid username or password' });
-  if (!bcrypt.compareSync(password, user.passwordHash)) {
+  if (!user) {
+    console.log('[login] user not found:', username);
+    return res.status(401).json({ error: 'Invalid username or password' });
+  }
+  const ok = bcrypt.compareSync(password, user.passwordHash);
+  console.log('[login] password match:', ok);
+  if (!ok) {
     return res.status(401).json({ error: 'Invalid username or password' });
   }
   req.session.user = { username };
+  console.log('[login] success for', username);
   res.json({ ok: true, username });
 });
 
