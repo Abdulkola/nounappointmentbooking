@@ -12,15 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			var password = (document.getElementById('password') || {}).value || '';
 
 			try {
-				// Local/front-end-only auth fallback (useful when no backend is available)
-				if (username === 'admin' && password === 'admin123') {
-					// Persist a simple session in sessionStorage and redirect
-					sessionStorage.setItem('loggedInUser', username);
-					window.location.href = '/student-dashboard.html';
-					return;
-				}
-
-				// If not the local admin account, attempt backend login (if available)
+				// Authenticate with the server so protected pages receive a session cookie.
 				var res = await fetch('/api/login', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -31,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				console.log('POST /api/login sent', { username });
 
 				if (res.ok) {
+					sessionStorage.setItem('loggedInUser', username);
 					window.location.href = '/student-dashboard.html';
 					return;
 				}
@@ -42,7 +35,12 @@ document.addEventListener('DOMContentLoaded', function () {
 				}
 			} catch (err) {
 				if (errorEl) {
-					// If backend isn't reachable, show generic message (local admin still works)
+					// Keep the frontend fallback available for static-only hosting.
+					if (username === 'admin' && password === 'admin123') {
+						sessionStorage.setItem('loggedInUser', username);
+						window.location.href = '/student-dashboard.html';
+						return;
+					}
 					errorEl.textContent = 'Network error. Please try again.';
 					errorEl.classList.remove('d-none');
 				}
