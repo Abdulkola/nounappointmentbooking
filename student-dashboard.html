@@ -53,6 +53,10 @@ Welcome, Student
 
 <hr>
 
+<a href="admin-dashboard.html" id="adminMenuLink" class="d-none d-block mb-3 text-decoration-none">
+<i class="fas fa-arrow-left"></i> Back to Admin Menu
+</a>
+
 <a href="student-dashboard.html" class="d-block mb-3 text-decoration-none">
 <i class="fas fa-home"></i> Dashboard
 </a>
@@ -187,31 +191,39 @@ Profile
 <script src="assets/js/script.js"></script>
 
 <script>
-	(function () {
-		var notifications = [
-			'Your appointment request is pending.',
-			'Finance approved your appointment for 2026-09-05.'
-		];
-		var alert = document.getElementById('dashboardNotification');
-		var message = document.getElementById('notificationMessage');
-		var badge = document.getElementById('notificationBadge');
-
-		if (alert && message && notifications.length) {
-			message.textContent = notifications[0];
-			alert.classList.remove('d-none');
-		}
-		if (badge) badge.textContent = notifications.length;
+	(async function () {
+		try {
+			var response = await fetch('/api/appointments', { credentials: 'include' });
+			if (!response.ok) return;
+			var appointments = await response.json();
+			var unread = appointments.filter(function (appointment) { return appointment.studentUnread; });
+			var badge = document.getElementById('notificationBadge');
+			var alert = document.getElementById('dashboardNotification');
+			var message = document.getElementById('notificationMessage');
+			if (badge) badge.textContent = unread.length;
+			if (unread.length && alert && message) {
+				var appointment = unread[unread.length - 1];
+				message.textContent = appointment.status === 'Pending'
+					? 'New appointment request submitted. Status: Pending.'
+					: appointment.status === 'Approved'
+						? 'Your appointment request has been approved. Date: ' + appointment.date + ' Time: ' + appointment.time + ' Department: ' + appointment.department
+						: 'Your appointment request has been rejected. Reason/Remark: ' + (appointment.remark || 'No remark provided.');
+				alert.classList.remove('d-none');
+			}
+		} catch (e) {}
 	})();
 </script>
 
 <script>
 	(async function () {
 		try {
+			var adminMenuLink = document.getElementById('adminMenuLink');
 			// First, check client-side sessionStorage (works without backend)
 			var localUser = sessionStorage.getItem('loggedInUser');
 			if (localUser) {
 				var el = document.getElementById('welcomeUser');
 				if (el) el.textContent = 'Welcome, ' + localUser;
+				if (adminMenuLink && localUser === 'admin') adminMenuLink.classList.remove('d-none');
 				return;
 			}
 
@@ -224,6 +236,7 @@ Profile
 			var data = await r.json();
 			var el = document.getElementById('welcomeUser');
 			if (el) el.textContent = 'Welcome, ' + (data.username || 'Student');
+			if (adminMenuLink && data.username === 'admin') adminMenuLink.classList.remove('d-none');
 		} catch (e) {
 			window.location.href = 'login.html';
 		}

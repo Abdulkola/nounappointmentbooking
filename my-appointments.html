@@ -71,6 +71,7 @@ Welcome, Student
 
 <a href="notifications.html" class="d-block mb-3 text-decoration-none">
 <i class="fas fa-bell"></i> Notifications
+<span id="notificationBadge" class="badge bg-danger ms-1">0</span>
 </a>
 
 <a href="#" id="logoutLink" class="d-block text-danger text-decoration-none">
@@ -136,15 +137,13 @@ Welcome, Student
             var el = document.getElementById('welcomeUser');
             if (el) el.textContent = 'Welcome, ' + (localUser || 'Student');
 
-            // Demo appointments (frontend-only)
-            var demo = [
-                { id: 1, dept: 'Admissions', date: '2026-09-01', status: 'Pending' },
-                { id: 2, dept: 'Finance', date: '2026-09-05', status: 'Approved' }
-            ];
             var tbody = document.getElementById('appointmentsBody');
-            demo.forEach(a => {
+            var response = await fetch('/api/appointments', { credentials: 'include' });
+            var appointments = await response.json();
+            document.getElementById('notificationBadge').textContent = appointments.filter(function (a) { return a.studentUnread; }).length;
+            appointments.forEach(function (a) {
                 var tr = document.createElement('tr');
-                tr.innerHTML = `<td>${a.id}</td><td>${a.dept}</td><td>${a.date}</td><td>${a.status}</td>`;
+                tr.innerHTML = '<td>' + a.id + '</td><td>' + a.department + '<br><small>' + a.purpose + '</small></td><td>' + a.date + '<br>' + a.time + '</td><td>' + a.status + (a.remark ? '<br><small>' + a.remark + '</small>' : '') + '</td>';
                 tbody.appendChild(tr);
             });
         } catch (e) {

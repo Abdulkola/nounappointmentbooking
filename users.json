@@ -2,5 +2,19 @@
   {
     "username": "admin",
     "passwordHash": "$2b$10$UEFNmfw1U47Tigxnon5pnu3MyEcNU8TrSc7JJlvADh051qRPSWnGe"
+  },
+  {
+    "username": "student",
+    "passwordHash": "$2b$10$.8as7o560.qASeVra7i7KOzI.56.rQMOVjwZcj5/mYjc7mLhtQyd6"
+  },
+  {
+    "username": "studentdemo2026",
+    "passwordHash": "$2b$10$9v787GSFtl3GpI4U5qDmkO4tdVDUzj2wHepg5sx.WwD.lQIHl7GiC",
+    "role": "student",
+    "fullName": "Demo Student",
+    "email": "studentdemo2026@example.com",
+    "phone": "08012345678",
+    "matricNumber": "NOUN/CSC/26/0002",
+    "programme": "B.Sc Computer Science"
   }
 ]

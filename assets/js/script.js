@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				if (res.ok) {
 					sessionStorage.setItem('loggedInUser', username);
-					window.location.href = '/student-dashboard.html';
+					window.location.href = username === 'admin' ? '/admin-dashboard.html' : '/student-dashboard.html';
 					return;
 				}
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					// Keep the frontend fallback available for static-only hosting.
 					if (username === 'admin' && password === 'admin123') {
 						sessionStorage.setItem('loggedInUser', username);
-						window.location.href = '/student-dashboard.html';
+						window.location.href = '/admin-dashboard.html';
 						return;
 					}
 					errorEl.textContent = 'Network error. Please try again.';

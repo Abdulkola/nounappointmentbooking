@@ -71,6 +71,7 @@ Welcome, Student
 
 <a href="notifications.html" class="d-block mb-3 text-decoration-none">
 <i class="fas fa-bell"></i> Notifications
+<span id="notificationBadge" class="badge bg-danger ms-1">0</span>
 </a>
 
 <a href="#" id="logoutLink" class="d-block text-danger text-decoration-none">
@@ -124,15 +125,25 @@ Welcome, Student
             var el = document.getElementById('welcomeUser');
             if (el) el.textContent = 'Welcome, ' + (localUser || 'Student');
 
-            var demo = [
-                'Your appointment request is pending.',
-                'Finance approved your appointment for 2026-09-05.'
-            ];
             var list = document.getElementById('notificationsList');
-            demo.forEach(n => {
+            var response = await fetch('/api/appointments', { credentials: 'include' });
+            var appointments = await response.json();
+            var unread = appointments.filter(function (appointment) { return appointment.studentUnread; });
+            document.getElementById('notificationBadge').textContent = unread.length;
+            appointments.slice().reverse().forEach(function (appointment) {
                 var li = document.createElement('li');
-                li.className = 'list-group-item';
-                li.textContent = n;
+                li.className = 'list-group-item' + (appointment.studentUnread ? ' list-group-item-warning' : '');
+                li.innerHTML = '<strong>' + (appointment.status === 'Pending' ? 'New appointment request submitted. Status: Pending.' : appointment.status === 'Approved' ? 'Your appointment request has been approved.' : 'Your appointment request has been rejected.') + '</strong><br>' +
+                    'Date: ' + appointment.date + ' | Time: ' + appointment.time + ' | Department: ' + appointment.department +
+                    (appointment.status === 'Rejected' ? '<br>Reason/Remark: ' + (appointment.remark || 'No remark provided.') : '') +
+                    (appointment.studentUnread ? ' <button class="btn btn-sm btn-link p-0" data-id="' + appointment.id + '">Mark as read</button>' : '');
+                var readButton = li.querySelector('[data-id]');
+                if (readButton) readButton.addEventListener('click', async function () {
+                    await fetch('/api/appointments/' + appointment.id + '/read', { method: 'PATCH', credentials: 'include' });
+                    li.classList.remove('list-group-item-warning');
+                    readButton.remove();
+                    document.getElementById('notificationBadge').textContent = Math.max(0, Number(document.getElementById('notificationBadge').textContent) - 1);
+                });
                 list.appendChild(li);
             });
         } catch (e) {

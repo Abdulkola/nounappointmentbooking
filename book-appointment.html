@@ -94,8 +94,8 @@ Welcome, Student
 <form id="bookForm">
 
 <div class="mb-3">
-<label class="form-label">Department</label>
-<select class="form-select">
+<label class="form-label" for="department">Department</label>
+<select id="department" class="form-select" required>
 <option>Academic Affairs</option>
 <option>Admissions</option>
 <option>Finance</option>
@@ -103,17 +103,24 @@ Welcome, Student
 </div>
 
 <div class="mb-3">
-<label class="form-label">Preferred Date</label>
-<input type="date" class="form-control">
+<label class="form-label" for="appointmentDate">Appointment Date</label>
+<input id="appointmentDate" type="date" class="form-control" required>
 </div>
 
 <div class="mb-3">
-<label class="form-label">Notes</label>
-<textarea class="form-control" rows="3"></textarea>
+<label class="form-label" for="appointmentTime">Appointment Time</label>
+<input id="appointmentTime" type="time" class="form-control" required>
 </div>
 
+<div class="mb-3">
+<label class="form-label" for="purpose">Purpose</label>
+<textarea id="purpose" class="form-control" rows="3" required></textarea>
+</div>
+
+<div id="bookingMessage" class="alert d-none" role="alert"></div>
+
 <div class="d-grid">
-<button class="btn btn-success">Request Appointment</button>
+<button type="submit" class="btn btn-success">Request Appointment</button>
 </div>
 
 </form>
@@ -141,6 +148,38 @@ Welcome, Student
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="assets/js/script.js"></script>
+
+<script>
+    document.getElementById('bookForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var message = document.getElementById('bookingMessage');
+        var button = this.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+            var response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    date: document.getElementById('appointmentDate').value,
+                    time: document.getElementById('appointmentTime').value,
+                    department: document.getElementById('department').value,
+                    purpose: document.getElementById('purpose').value.trim()
+                })
+            });
+            var data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Unable to submit appointment.');
+            message.className = 'alert alert-success';
+            message.textContent = 'Appointment request submitted. Status: Pending.';
+            this.reset();
+        } catch (error) {
+            message.className = 'alert alert-danger';
+            message.textContent = error.message;
+        } finally {
+            button.disabled = false;
+        }
+    });
+</script>
 
 <script>
     (async function () {
